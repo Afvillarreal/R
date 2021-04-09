@@ -207,8 +207,24 @@ is.matrix(C)
 
 #Ejercicio: Crear un arreglo.
 
+Edad = c(16,17,18,18,21)
+Num_her = c(1,2,3,3,4)
+Names = c("E1","E2","E3","E4","E5")
+Estrato = c(2,3,4,3,5)
+Estrato = as.factor(Estrato)
+semestre = factor(c(2,3,4,4,7))
 
+class(Edad)
+class(Num_her)
+class(Names)
+class(Estrato)
+class(semestre)
 
+Base = data.frame(Edad,Num_her,Names,Estrato,semestre)
+Base
+dim(Base)
+str(Base)#mirar todaslas variables al mismo tiempo
+head(Base)
 
 #===============================================================================
 #===============================================================================
