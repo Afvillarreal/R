@@ -186,8 +186,14 @@ Datos6
 
 #Ejericio: Exportar la base "Base" a extension .txt
 
+write.table(Base,file="Base2.txt")
+
 
 #Ejericio: Exportar la base "Base" a extension .dta
+
+library(haven)
+write_dta(data = Base,path = "Base3.dta" )
+
 
 
 
@@ -219,10 +225,25 @@ Datos6
 library("eurostat")
 
 #------------- Se busca "un tema" con search_eurostat
-T1 <- search_eurostat("employment", type = "all") 
-
+T1 = search_eurostat("employment", type = "all") 
+T1
+T1$code[291]
+T1$code[333]
+T1[333,]
 
 #-------------- Elegir una base de datos en Eurostat
 
+BaseEurostat = "cult_emp_sex"
+label_eurostat_tables(BaseEurostat)
+
 
 #------------------ Descargar los datos con get_eurostat()
+DataEuro = get_eurostat(BaseEurostat,time_format = "raw",keepFlags = F)
+DataEuro
+DataEuro = label_eurostat(DataEuro)
+DataEuro
+
+DataEuro$geo
+
+head(DataEuro) #para ver las primeras
+tail(DataEuro) #para ver las ultimas
