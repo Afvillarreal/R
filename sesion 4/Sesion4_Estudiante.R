@@ -187,9 +187,21 @@ library(readxl)
 Estudiantes1 <- read_excel("Estudiantes1.xlsx")
 Estudiantes1
 
-Estudiantes2 = Estudiantes1  %>% separate("Taller1&Taller2", c("Taller1","Taller2"),sep="&")
+
+Estudiantes1$Taller1 = as.numeric(Estudiantes2$Taller1)
+Estudiantes2$Taller2 = as.numeric(Exportacion2$Taller2)
+str(Exportacion2$Taller1)
+
+Exportacion2 = Estudiantes1  %>% separate("Taller1&Taller2", c("Taller1","Taller2"),sep="&")
 Estudiantes2 = Estudiantes2  %>% separate("Estudiante", c("Nombre","Apellido"),sep=" ")
 Estudiantes2 = Estudiantes2 %>% unite(Grupo_tema,7:8,sep = "_")
+
+E2 <- Estudiantes1  %>% separate("Taller1&Taller2", c("Taller1","Taller2"),sep="&")%>%
+  separate("Estudiante", c("Nombre","Apellido"),sep=" ") %>%
+  unite(Grupo_tema,7:8,sep = "_") %>%
+  mutate(Taller1 = as.numeric(Taller1), 
+         Taller2 = as.numeric(Taller2))
+str(E2)
 
 
 #Ejercicio: 
@@ -206,11 +218,13 @@ View(Exportacion)
 Exportacion2 = Exportacion  %>% separate("Zona", c("Departamento","Ciudad"),sep="_")
 Exportacion2 = Exportacion2 %>% unite(Registro_Tipo,5:6,sep = "_")
 
+
 Exportacion3 = Exportacion2 %>% gather(Trimestre,Unidades,3:4)
 Exportacion3 = Exportacion2 %>% gather(Trimestre,Unidades,3:4)
 Exportacion3 = Exportacion3 %>% mutate(Trimestre= gsub("TrimestreI","I",Trimestre),
                                        Trimestre = gsub("TrimestreII","II",Trimestre))
 
+Exportacion3$Unidades = as.numeric(Exportacion2$Unidades)
 
 
 
