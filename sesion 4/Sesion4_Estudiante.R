@@ -3,7 +3,6 @@ rm(list=ls())
 getwd()
 
 setwd("C:/Users/felipe/Desktop/Curso R/sesion 4")
- 
 
 # Definir directorio de trabajo.
 #===============================================================================
@@ -27,7 +26,7 @@ setwd("C:/Users/felipe/Desktop/Curso R/sesion 4")
 
 # Ejercicio: Consultar en R Â¿Que es tidyverse?
 
-??tidyverse
+#??tidyverse
 
 # Simplificar cÃ³digo y acelerar el procesamiento
 
@@ -113,7 +112,7 @@ data_wide = data_2
 # Luego tomar las observaciones para cada individuo y la colocar en una columna 
 # que se llama salario.
 
-data_long <- data_long %>% mutate(periodo=gsub("W_","",periodo))
+data_long <- data_wide %>% gather(periodo,salario,2:4)
 data_long
 
 
@@ -124,7 +123,7 @@ data_long
 library(dplyr) #funcion mutate
 library(magrittr) # para la opcion operador "%>%"
 
-data_long = data_long %>% mutate(periodo-gsub("W_","",periodo))
+data_long = data_wide %>% mutate(periodo-gsub("W_","",periodo))
 data_long
 
 
@@ -153,7 +152,7 @@ dim(Indice)
 str(Indice)
 Indice_long <- Indice %>% gather(Año,Indice,2:7)
 Indice_long
-Indice_long <- Indice_long %>% mutate(P.Relativo= gsub("Puntos","%",P.Relativo),
+Indice_long2 <- Indice_long %>% mutate(P.Relativo= gsub("Puntos","%",P.Relativo),
                                       Año = gsub("P","",Año))
 
 #---------------------------------------------------------------------
@@ -184,8 +183,13 @@ data_4b
 #para que se vean como los de la imagen y asegurese que el tipo de datos 
 #que queden en las columnas de taller sean numericos.
 
+library(readxl)
+Estudiantes1 <- read_excel("Estudiantes1.xlsx")
+Estudiantes1
 
-
+Estudiantes2 = Estudiantes1  %>% separate("Taller1&Taller2", c("Taller1","Taller2"),sep="&")
+Estudiantes2 = Estudiantes2  %>% separate("Estudiante", c("Nombre","Apellido"),sep=" ")
+Estudiantes2 = Estudiantes2 %>% unite(Grupo_tema,7:8,sep = "_")
 
 
 #Ejercicio: 
@@ -194,4 +198,21 @@ data_4b
 #Con las funciones que hemos estudiado transforme los datos de la base 
 #para que se vean como los de la imagen y verifique la estructura
 #de la base final.
+
+library(readxl)
+Exportacion <- read_excel("Exportacion.xlsx")
+View(Exportacion)
+
+Exportacion2 = Exportacion  %>% separate("Zona", c("Departamento","Ciudad"),sep="_")
+Exportacion2 = Exportacion2 %>% unite(Registro_Tipo,5:6,sep = "_")
+
+Exportacion3 = Exportacion2 %>% gather(Trimestre,Unidades,3:4)
+Exportacion3 = Exportacion2 %>% gather(Trimestre,Unidades,3:4)
+Exportacion3 = Exportacion3 %>% mutate(Trimestre= gsub("TrimestreI","I",Trimestre),
+                                       Trimestre = gsub("TrimestreII","II",Trimestre))
+
+
+
+
+
 
