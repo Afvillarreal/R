@@ -181,11 +181,14 @@ Data1 %>% mutate(GDP = pop*gdpPercap)
 
 #Ejercicio: Calcular la media global de la esperanza de vida
 
+Data1 %>% summarise(mean(lifeExp))
+
 
 #Ejercicio: Calcular la media de todas las variables del data frame
 #¿Son correctos los calculos que realiza?
 
-
+Data1 %>% summarise_all(mean)
+summary(Data1)
 
 
 #---------------------------------------------------------------------
@@ -197,12 +200,34 @@ Data1 %>% mutate(GDP = pop*gdpPercap)
 
 #Ejercicio: Agrupar por continente y hacer el conteo de observaciones.
 
+Data1 %>% group_by(continent)%>% summarise(Total = n())
+
 
 
 #Ejercicio:Agrupar por continente, hacer el conteo de observaciones por continente
 #y contar el numero de paises por continente 
 
+Data1 %>% group_by(continent)%>%
+   summarise(Total = n(), N.paises = n_distinct(country))
 
+Data1 %>% group_by(continent) %>% 
+   summarise(Total = n(), N.paises = n_distinct(country))
+
+#---------------------------------------------------------------------
+#---------------------------------------------------------------------
+# --------------- la funcion sample
+
+#EXtraccion de muestras de forma leatoria.
+
+#Extraer cuatro observaciones aleatorias.
+
+Data1 %>% sample_n(4,replace = F)
+Data1 %>% sample_n(10,replace = T)
+
+
+#Extraer de manera aleatoria el 25% de las observaciones.
+
+Data1 %>% sample_n(0.25,replace = F)
 
 #---------------------------------------------------------------------
 #---------------------------------------------------------------------
@@ -212,18 +237,38 @@ Data1 %>% mutate(GDP = pop*gdpPercap)
 
 #Calcular el promedio de esperanza de vida por continente.
 
+Data1 %>% group_by(continent)%>%
+   summarise(mean(lifeExp))
 
 #Calcular el promedio por continente del PBI para el a?o 2002.
 
 
 
-#Calcular el promedio de esperanza de vida y PBI por continente y año para el 2002 y 2007.
+Data1 %>% filter(year == "2002")%>%
+   group_by(continent) %>%
+   summarise(mean(gdpPercap))
+
+#Calcular el promedio de esperanza de vida y 
+#PBI por continente y a�o para el 2002 y 2007.
+
+
+Data1 %>% filter(year == "2002" | year =="2007")%>%
+   group_by(continent) %>%
+   summarise(PIB = mean(gdpPercap),LifeExpN =  mean(lifeExp))
+
+
+Data1 %>% group_by(continent) %>%
+   filter(year %in% c("2002","2007"))%>%
+   summarise(PIB = mean(gdpPercap),LifeExpN = mean(lifeExp))
 
 
 # Por continente, para años previos a 1962, cree una nueva variable 
 #"lifeExp_gain = lifeExp - first(lifeExp". El datra frame debe mostrar el continente,
 # año, esperanza de vida y el calculo de la nueva variable.
 
-
+Data1 %>% group_by(continent) %>%
+   filter(year < 1962) %>%
+   mutate(lifeExp_gain = lifeExp - first(lifeExp)) %>%
+   select(c("continent","year","lifeExp","lifeExp_gain"))
 
 
