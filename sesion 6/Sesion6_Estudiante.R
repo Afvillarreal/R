@@ -137,4 +137,6 @@ s1 = seq(Sys.Date(),length.out=10,by="1 day");s1
 
 dias = s1[5]-s1[1];dias
 
+saveRDS(Base,file="Base2.rds")
+
 
