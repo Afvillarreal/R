@@ -1,0 +1,202 @@
+---
+title: "Sesión 17"
+author: "Carolina Luque"
+date: "11/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Definir directorio de trabajo.
+setwd("C:/Users/felipe/Desktop/Curso R/R")
+```
+
+
+```{r message=TRUE, warning=TRUE, include=FALSE}
+# Cargar y leer librerias.
+library(tidyverse)
+library(dplyr)
+library(magrittr)
+
+library(lubridate) # Fechas - series de tiempo.
+
+library(rgdal) # Importar archivos shapefile
+library(broom) # Convertir a un objeto tidy
+library(mapproj) # Gráficar mapas en ggplot
+library(RColorBrewer) # Paleta de colores para los mapas.
+library(ggspatial) # Gráfico espacial
+library(sf) # Gráfico espacial
+
+```
+
+
+# Visualizar series de tiempo.
+
+## Tasa de Cambio Representativa del Mercado - Historico.
+La Tasa de Cambio Representativa del Mercado–TRM corresponde al promedio ponderado de las operaciones de compra y venta de contado de dólares de los Estados Unidos de América a cambio de moneda legal colombiana. Los datos proviene de datos abiertos. (https://www.datos.gov.co/Econom-a-y-Finanzas/Tasa-de-Cambio-Representativa-del-Mercado-Historic/mcec-87by)
+
+```{r warning=TRUE}
+trm <- read_csv("https://www.datos.gov.co/api/views/mcec-87by/rows.csv?accessType=DOWNLOAD")
+
+# Revisar la clase de la variable VIGENCIAHASTA
+class(trm$VIGENCIAHASTA)
+```
+
+```{r}
+# Cambiar formato de fecha.
+
+trm = trm %>% 
+  mutate(fecha = dmy(VIGENCIAHASTA))%>%
+  arrange(desc(fecha))
+
+```
+
+
+```{r}
+# Verificar el formato de la fecha.
+class(trm$fecha)
+```
+
+```{r}
+# Gráficar el valor en función del tiempo.
+ggplot(data=trm,
+       mapping = aes(x= fecha, y=VALOR))+
+geom_line()
+
+```
+
+```{r}
+# Gráficar teniendo en cuenta el área.
+ggplot(data=trm,
+       mapping = aes(x= fecha, y=VALOR))+
+geom_area()
+```
+
+```{r}
+# Visualizar en un periodo de tiempo. 
+ggplot(data=trm,mapping = aes(x= fecha, y=VALOR))+geom_line()+
+  scale_x_date(date_breaks="6 weeks", date_labels="%b %d", limits = c(as_date("20201-01-01"),as_date("2021-03-01")))+scale_y_continuous(limits = c(3000,NA))
+
+ggplot(data=trm,mapping = aes(x= fecha, y=VALOR))+geom_line()+
+  scale_x_date(date_breaks="6 weeks", date_labels="%b %d", limits = c(as_date("2020-01-01"), as_date("2021-03-01")))+
+  scale_y_continuous(limits = c(3000,NA))
+```
+
+```{r}
+#Visualizar cada cierto número de años
+ggplot(data=trm,mapping = aes(x= fecha, y=VALOR))+geom_line()+
+  scale_x_date(date_breaks="4 years", date_labels="%b %d")
+```
+
+# Construcción de mapas.
+
+Para hacer un mapa en R (y de hecho en cualquier otro programa) se necesita al menos dos cosas. Un archivo con el mapa y un archivo con los datos. 
+
+Los archivos de los mapas vienen en dos formatos, usualmente como un shapefile geojson. Estos archivos se consiguen facilmente en Internet. Por ejemplo, buscar "Bogotá localidades shapefile" o "Bogotá localidades geojson".
+
+Descargar el shapefile de las localidades de la siguiente página: https://datosabiertos.bogota.gov.co/dataset/localidad-bogota-d-c
+
+NOTA: Descomprimir la carpeta y guardar todo en el directorio en una carpeta con el mismo nombre.
+
+```{r}
+# Leer el shapefile
+localidades = readOGR("locashp", "Loca")
+```
+
+Explorar el shapefile: (1) resumen de los datos incluyendo las coordenadas mínimas y máximas, (2) cuántas regiones hay, (3) encabezado de los datos asociados al shapefile.
+  
+```{r}
+# Explorar
+summary(localidades)
+length(localidades)
+head(localidades)
+```
+Construir un mapa básico
+
+```{r}
+# Gráfico básico
+plot(localidades)
+```
+
+Hacer el mapa básico en ggplot implica convertir el objeto en uno 
+entendido por ggplot, es decir un data frame. Esto se puede hacer con la función `tidy` del paquete `broom`:
+
+```{r}
+# Objeto tidy
+localidades1 = tidy(localidades)
+```
+
+```{r}
+# Construir el gráfico con ggplot
+ggplot(data=localidades1,
+       mapping = aes(x=long, y = lat, group=group))+
+  geom_polygon(color = "black", fill= "white")+
+  coord_map()+
+  theme_light()
+```
+Podemos añadir conteos por localidad según una variable de interés. Cargar los datos para incluir en el mapa de la siguiente página. 
+
+http://saludata.saludcapital.gov.co/osb/datos_abiertos_osb/enf-transmisibles/OSB_EnfTransm-COVID-19.csv
+
+```{r}
+# Identificar la codificación del documento.
+
+
+```
+
+
+```{r}
+# Importar los datos directamente desde la página de la secretaría de salud.
+
+
+```
+
+Calcular los casos por localidad.
+
+```{r}
+# Casos por localidad.
+
+```
+
+
+```{r}
+# Obtener id de las localidades.
+
+```
+
+```{r}
+# Obtener nombre de las localidades
+
+```
+
+```{r}
+# Unir el id y los nombres en una base de datos.
+
+```
+
+```{r}
+# unir los casos por localidad y los datos
+
+```
+
+```{r}
+# Unir los datos anteriores con los datos del shapefile:
+
+```
+
+
+```{r}
+# Gráficar
+
+```
+
+```{r}
+# Otra alternativa.
+
+```
+
+
