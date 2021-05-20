@@ -1,0 +1,250 @@
+---
+title: "Taller gráficos"
+author: "Ortiz Sebastian"
+date: "09/5/2021"
+output: html_document
+---
+
+
+```{r include=FALSE}
+setwd("C:/Users/sebastian/Desktop/R")
+```
+
+El propósito del presente taller es aplicar lo aprendido en relación a la construcción de gráficos en R. Al finalizar el taller debe enviar por CANVAS lo siguiente: 
+
+El htlm y el RMarkdown. El html sólo debe contener salidas no debe aparecer el código.
+
+# Actividad.
+
+# Vínculo de bases de datos
+
+Considere la base de datos `estudiantes`. Esta base contiene información (completamente anonimizada) de una muestra aleatoria de estudiantes de una universidad en relación a su rendimiento en la prueba Saber 11. 
+
+1. Importar la base de estudiantes de la Universidad. No olvidar utilizar en el encoding UTF-8 
+
+```{r include=FALSE}
+library(dplyr)
+library(readr)
+library(knitr)
+library(ggplot2)
+estudiantes <- read_delim("estudiantes.txt", 
+"\t", escape_double = FALSE, trim_ws = TRUE)
+```
+
+        Base importada con codificacion UTF-8
+  
+2. (4 puntos) Compruebe si la base de datos tiene filas con datos perdidos. Si los hay, construya una base que se llame "estudiantes1" eliminando las filas con datos perdidos. ¿Cuántas filas se eliminaron?
+
+```{r include=FALSE}
+
+# Cantidad de valores perdidos en la base de datos:
+sum(is.na(estudiantes))
+
+estudiantes1 <- estudiantes
+sum(is.na(estudiantes1))
+
+# Eliminar los valores perdidos.
+
+estudiantes1 <- na.omit(estudiantes1)
+
+# Para verificar que ya no tenemos datos perdidos.
+
+sum(is.na(estudiantes1))
+```
+
+        RTA: Se encontro `119.862` filas para eliminar
+
+3. (4 puntos) Construya una base de datos que se llame "estudiantes2" y deje sólo las variables "Año.y.periodo", "Programa.de.estudio", "Sexo", "Ciudad.de.colegio", "Biología", "Química", "Física", "Matemáticas", "Filosofía", "Historia", "Lenguaje", "Sociales", "Idioma",              "Interdiciplinar". Estas son las variables que se van a utilizar en la construcción de los gráficos.  
+
+```{r include=FALSE}
+
+estudiantes2 <- estudiantes1
+
+estudiantes2 <- estudiantes2 %>% select("Año y periodo", "Programa de estudio", "Sexo", "Ciudad de colegio", "Biología",
+                                        "Química", "Física", "Matemáticas", "Filosofía", "Historia", "Lenguaje", "Sociales",
+                                        "Idioma","Interdiciplinar")
+```
+
+        estudiantes2 con nuevas variables.
+
+Para hacer que los gráficos tengan una buena presentación es conveniente hacer un preprocesamiento previo a la base.
+
+4. (4 puntos) Renombrar las variables "Año.y.periodo", "Programa.de.estudio", "Sexo" y "Ciudad.de.colegio" como "Periodo", "Programa", "Genero" y "Ciudad", respectivamente. Guarde los cambios en estudiantes2.
+
+```{r include=FALSE}
+
+estudiantes2 <- estudiantes2 %>% rename(Periodo ="Año y periodo",Programa = "Programa de estudio",Genero = Sexo ,Ciudad =  "Ciudad de colegio" )
+
+```
+
+        variables renombradas. 
+ 
+5. (4 puntos) Convierta en factor la variavble "Ciudad" y revise sus niveles. ¿Hay ciudades repetidas, es decir, que sean la misma pero aprecen en la base escritas en forma diferente como "BOGOTA" y "BOGOTA DC"?
+
+        RTA: No hay Ciudades repetidas
+
+NOTA: Esto es importante porque si se van a hacer gráficas por ciudad, R las tomaría como ciudades diferentes. Es algo que debería verificarse con todas las variables que sean tipo factor.
+
+
+```{r include=FALSE}
+#Convertir variable Ciudad a factor:
+estudiantes2$Ciudad <- as.factor(estudiantes2$Ciudad)
+
+#Verificar si hay ciudades repetidas
+
+levels(estudiantes2$Ciudad)
+table(estudiantes2$Ciudad)
+
+```
+
+    
+# Base final:
+
+```{r echo=FALSE}
+
+knitr::kable(head(estudiantes2),caption = "Tabla final para graficar")
+```
+
+# Gráficos.
+
+En los puntos que siguen se propone hacer gráficos para visualizar la información que tiene la base "estudiantes2". Construya los gráficos lo mejor posible dado que la edición de los mismos se tendrá en cuenta a la hora de evaluar esta parte del taller. Los gráficos deben ser claros para cualquier lector, por ejemplo, deben tener un titulo, nombres en los ejes y todo lo que ustedes consideren necesario para comprender la información.
+
+6. (12 puntos) Utilizando la libreria base y ggplo2 construya un histograma para la variable "interdisciplinar". Describa que observa en el comportamiento de ésta variable y comente acerca de la libreria que más le gusto para hacer el gráfico.
+
+-
+        La grafica nos muestra como gran parte de los estudiantes tienen un resultado realmente bajo en terminos de interdisciplinar, y un porcentaje bajo logra tener notas aceptables.
+-      
+        La razon por la cual utilizo la libreria base en lugar de ggplot, es debido a que me siento mas familiarizado con la sintaxis de esta, aunque ggplot tambien tiene grandes ventajas. 
+          
+          
+```{r echo=FALSE}
+
+frec <- table(estudiantes2$Interdiciplinar)
+
+barplot(frec,
+        col = rainbow(1),
+        beside=T,
+        ylim=c(0,50))
+
+legend("topright",
+       title="Variable interdisciplinar",
+       legend = "Interdiciplinar",
+       fill=rainbow(2),
+       cex = 1.5,
+       border = T,
+       text.col = "black",
+       horiz = T)
+```
+
+
+
+7. (12 puntos) Utilizando la libreria que prefiera construya un gráfico donde se muestre la función de densidad de la variable "Matemáticas" por "Género". Haga una interpretación del gráfico.
+
+            Observamos la densidad tanto de hombres como mujeres bajo la funcion de densidad comparando los generos y su rendimiento en Matematica, donde se destacan ligeramente mejores resultados por parte del sexo masculino. 
+
+```{r echo=FALSE}
+Densidad <- ggplot(estudiantes2, aes(Matemáticas)) + geom_density()
+
+
+Densidad + scale_y_continuous("Genero")+
+  scale_x_continuous("Matemáticas")+
+  facet_grid(Genero~.)
+```
+
+
+
+8. (12 puntos) Utilizando la libreria que prefiera construya un diagrama circular donde muestre el porcentaje de estudiantes que presentaron la prueba por programa. Haga una interpretación del gráfico.
+
+        Con el siguiente diagrama de torta podemos confirmar que poco mas de 2 de cada 3 estudiantes presentaron el programa A abarcando el 71% de las pruebas. 
+
+```{r echo=FALSE}
+
+  g8 <- ggplot(estudiantes2, aes(x=1, fill = , y = (..count..)/sum(..count..),fill= Programa )) +geom_bar()
+  g8 + coord_polar(theta = "y")+
+    theme_void()+
+    ggtitle("Estudiantes que presentaron la prueba por programa")+
+    geom_text(stat = "count",
+              aes(label = paste(round((..count..)/sum(..count..)*100), "%")),
+              position = position_stack(vjust = 0.5),
+              size = 4,
+              color = "black")
+  
+```
+
+
+9. (12 puntos)Construya un gráfico que le permita comparar ver como se comporta la variable "Matemáticas" por "Programa". Interprete lo que observa.
+
+         Por medio de este grafico, se puede concluir la ligera supremacia en notas acpetables que tiene el programa A, al momento de compararlo en sus resultados dentro de la materia de matematicas, pero al mismo tiempo se evidencia que gran parte del programa A tiene un bajo desempeño inferior a 60 al igual que el programa A.
+
+```{r echo=FALSE, warning=FALSE}
+g5 <- ggplot(estudiantes2,aes(Matemáticas, y = (..count..)/sum(..count..),fill=Programa))+ geom_bar()
+
+  g5 + xlab("Programa") + ylab("R. Matematica") +
+  ggtitle("Distribución de matematicas por entrevista")+
+  scale_fill_discrete("Programa")+
+    
+  theme_light()
+```
+
+   
+10. (12 puntos) Construya un boxplot a partir del cual pueda comparar la variable "Matemáticas" con las demás materias. Incluya la media de cada materia en el gráfico. Describa lo que observa en la gráfica.
+
+            En base el boxplot observamos como pocar materias llegan a tener valores maximos de las variables y ademas que la mayoria de las materias estan un valor mediana comparado a su desempeño, 
+            
+```{r echo=FALSE}
+
+#names(estudiantes2)
+
+Mar_var <- estudiantes2 %>% select(c("Biología","Química","Física","Matemáticas","Filosofía","Historia","Lenguaje","Sociales","Idioma","Interdiciplinar"))
+
+#Mar_var+geom_vline(aes(xintercept=mean(estudiantes2$Física)))+
+
+boxplot(Mar_var,
+        scale_x_binned("%b %d"),
+        main="Distribución media de las materias",
+        ylab="Resultados",
+        xlab="Materias")
+
+```
+
+
+
+11. (12 puntos) Construya un diagrama de barras apiladas para ver el tipo de programa por ciudad. Interprete el gráfico
+
+        logramos identificar en la grafica como en la gran mayoria de las ciudades estan en un porcentaje realmente bajo y solo unas pocas ciudades han tenido una amplia participacion: como Medellin, Bogota entre otras.  
+      
+```{r echo=FALSE, warning=FALSE}
+
+aplicado <- ggplot(estudiantes2,aes(Matemáticas, fill=Ciudad))+ geom_bar(position = "stack")
+
+aplicado + xlab("Ciudades") + ylab("Numero de casos") +
+  ggtitle("Barras aplicadas de programa por ciudad")+
+  scale_fill_discrete("Ciudades:")
+  
+```
+
+         
+
+12. (12 puntos) Construya un un gráfico que le permita comparar el comportamineto de la variable "Matemáticas" para los colegios ubicados en los municipios de CHIA y FACATATIVA.
+
+                Podemos observar como en los municios de facatativa y chia tienen una tendencia especialmente a tener resultados a la mitad de resultados y pocas personas que 
+                      presentaron la prueba tiene notas aceptables.
+                
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+
+ 
+
+Municipios <- estudiantes2$Ciudad=="CHIA" & estudiantes2$Ciudad=="FACATATIVA" 
+
+aplicado2 <- ggplot(estudiantes2,aes(Matemáticas,fill=Municipios))+ geom_bar(position = "stack")
+
+aplicado2 + xlab("Chia  Facatativa") + ylab("Matematicas")+
+scale_fill_discrete("Municipios",labels=c("Ciudades"))
+
+
+
+
+```
+                  
+                

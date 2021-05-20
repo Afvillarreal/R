@@ -1,0 +1,275 @@
+---
+title: "Modelo de regresión lineal simple"
+author: "Nombre del estudiante"
+date: "Fecha"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Caso práctico. 
+
+### Diagrama de dispersión.
+
+El propósito del estudio es analizar la relación lineal entre la frecuencia cardiaca en reposo (en latidos) y el peso corporal (en kilogramos) de 99 personas con características similares.Para hacer un primer diagnóstico de la posible relación lineal entre estas dos variables, se realiza un diagrama de dispersión.
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+#Seleccionar directorio de trabajo
+
+```
+
+
+```{r}
+#Cargar base de datos.
+
+```
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+#Diagrama de dispersión
+
+```
+
+## Calcular el coeficiente de correlación de Pearson
+
+```{r pressure, echo=FALSE, out.width = '50%',fig.align="center"}
+knitr::include_graphics("Cor.png")
+```
+
+
+```{r}
+# Test coeficiente de correlación lineal.
+
+```
+
+
+### Modelo estadístico (componente sistemática y aleatoria).
+
+Proponga un modelo estadístico para explicar el valor de la frecuencia cardiaca en función del peso corporal. Describa las componentes aleatoria y sistemática del modelo propuesto.
+
+El modelo estadístico que se propone, de acuerdo al gráfico de puntos anterior es el siguiente:
+
+$$
+  \begin{cases}
+   y_i=\beta_0+\beta_1x_i+\varepsilon_i\\
+   \varepsilon_i\sim N (0,\sigma^2)\\
+   \varepsilon_1,\dotsc, \varepsilon_n \text{ independientes}
+  \end{cases}
+$$
+Donde $y_i$ representa la frecuencia cardiaca en reposo del $i$-ésimo individuo de la muestra y $x_i$ representa el peso corporal del $i$-ésimo individuo de la muestra.
+
+
+```{r echo=FALSE, out.width = '70%',fig.align="center"}
+knitr::include_graphics("Model.png")
+```
+
+Se hace la estimación de los parámetros usando la rutina *lm()* de R.
+
+
+```{r,message=FALSE}
+# Modelo de regresión lineal simple.
+
+```
+
+```{r}
+# Gráfico con la recta de regresión
+
+```
+
+### Interpretación de los parámetros estimados.
+
+Algunas interpretaciones que se pueden dar del modelo son las siguientes: 
+
+$\hat{\beta}_0 :$ 
+
+$\hat{\beta}_1 :$ 
+
+$\hat{\sigma} :$ 
+
+### Supuestos del modelo.
+
+El modelo de regresión lineal tiene 4 supuestos bajo los cuales tiene sentido la inferencia. Si estos supuestos no se cumplen el modelo no es útil para extrapolar o hacer generalizaciones de la relación entre las variables consideradas. Conclusiones con un modelo que no cumple los supuestos conlleva a análisis sesgados. Los supuestos son:
+
+1) Linealidad.
+
+2) Normalidad.
+
+3) Multicolinealidad (Independencia).
+
+4) Homocedasticidad.
+
+
+¿Es sensato pensar que el modelo propuesto cumple los supuestos? Verificar a un nivel de significancia del 5%.
+
+
+#### Normalidad de los residuales.
+
+Los residuos (error) deben tener una distribución normal. 
+
+$$
+ \begin{cases}
+  H_0:\text{Los residuales del modelo siguen una distribución normal.}\\
+  H_1:\text{Los residuales del modelo no siguen una distribución normal.}
+ \end{cases}
+$$
+
+
+```{r echo=FALSE, out.width = '45%',fig.align="center"}
+knitr::include_graphics("Nor.png")
+```
+
+
+```{r,message=FALSE}
+# Gráficos de residuales.
+
+```
+
+```{r}
+# Gráfico qqPlot (Obervar que los )
+qqplot(estudentizados, pch=20)
+```
+
+NOTA: Un gráfico qqplot permite observar cuan cerca está la distribución de un conjunto de datos a alguna distribución ideal y comparar la distribución de dos conjuntos de datos.
+
+```{r}
+#Prueba de normalidad
+shapiro.test(estudentizados)
+```
+
+```{r echo=FALSE, out.width = '50%',fig.align="center"}
+knitr::include_graphics("pvalue.png")
+```
+
+Conclusión: Con un nivel de significancia del 5%, se puede afirmar que los reciduales del modelo siguen una distribución normal
+
+
+#### Varianza constante (Homocedasticidad).
+
+La homocedasticidad es cuando la varianza de los errores de medición de nuestro análisis es igual para todas las variables independientes.
+
+$$
+ \begin{cases}
+  H_0:\text{Los residuales del modelo tienen variaza constante.}\\
+  H_1:\text{Los residuales del modelo no tienen varianza constante.}
+ \end{cases}
+$$
+
+```{r echo=FALSE, out.width = '50%',fig.align="center"}
+knitr::include_graphics("Homo.png")
+```
+
+```{r,message=FALSE}
+library(lmtest)
+bptest(model)
+
+library(car)
+ncvTest(model)
+```
+
+Conclusión: Con un nivel de significancia del 5%, se puede afirmar que los residuales del modelo tiene varianza constante, 
+No hay rechazo de hipotesis nula
+
+
+#### Independecia de los residuales.
+
+$$
+ \begin{cases}
+  H_0:\text{Los residuales del modelo son independientes.}\\
+  H_1:\text{Los residuales del modelo no son independientes.}
+ \end{cases}
+$$
+
+Cada variable independiente por sí sola, suma a la explicación de la variable dependiente. En otras palabras, no hay relación entre las variables independientes. Si hubiera relación entre las variables independientes de nuestro modelo, tendríamos un problema llamado multicolinealidad.  La multicolinealidad es cuando dos variables independientes están relacionadas.
+
+
+```{r,message=FALSE}
+dwtest(model, level = 0,95)
+```
+
+Conclusión: No se rechaza la hipotesis nula y se concluye con una significancia del 5% que son los residuales del modelo son independientes. 
+
+
+### Intervalo de confianza para los parámetros del modelo.
+
+Calcule e interprete intervalos de 95% de confianza para los parámetros de localización.
+
+
+
+```{r}
+confint(model, level = 0,95)
+
+```
+
+```{r}
+# margen de error de la estimación(intercepto)
+72.0209261 - bo
+# margen de error de la estimación(peso)
+0.8166702 - b1
+```
+
+Con una confianza del 95% se puede afirmar que al frecuncia cardiaca promedio en reposo para las personas con un peso de 0kg
+(si existen), oscila entre 64.1921190 y 72.0209261 latidos por minuto. la estimacion se realiza con unb margan de error de 3.914404.
+
+Con una confianza del 95% se pude afirmar que por cada kilogramo adicional en el peso, la frecuencia cardiaca en resposo en promdio aumenta entre 0.7136421 y 0.8166702 latidos por minuto. la estimación se hace con un margen de error de 0.05151403.
+
+### Prueba de hipótesis sobre los parámetros.
+
+¿La muestra de 99 personas proporciona evidencia estadísticamente significativa de que la frecuencia cardiaca en reposo depende del peso corporal? Justifique su respuesta.
+
+Para responder esta pregunta se debe juzgar el siguiente sistema de hipótesis.
+
+$$
+ \begin{cases}
+  H_0:\beta_1=0\\
+  H_1:\beta_1\neq 0
+ \end{cases}
+$$
+```{r}
+qt(0.025,97, lower.tail = T)
+
+```
+
+De acuerdo con el resumen del modelo, se tiene que el estadistico de prueba $t$ para contrastar esta hipotesis es 29.48 y $t_c = 1.9847$. Entonces, se rechaza la hipotesis nula y se concluye que $\beta_1 \neq 0$, es decir la frecuencia cardiaca en reposo si depende del peso corporal. 
+
+
+
+### Intervalo de confianza de predicción.
+
+* Calcular e interpretar un intervalo de 90% de confianza para frecuencia cardiaca en reposo promedio de las personas con 70 kilogramos de peso.
+
+
+```{r}
+y = predict(model, list(Peso = 74.6), level = 0.90, interval = "confidence")
+
+```
+
+```{r}
+y[3]-y[1]
+```
+
+Nota: Este intervalo es para todas aquellas personas que tienen un valor específico de peso. Es un intervalo de confianza para alguien que esta dentro de la muestra. 
+
+Con una confianza del 90% se estima que las personas con un peso de 74.6 kilogramos tiene en promedio una frecuencia cardiaca en resposo entre 124.3827 y 125.9917 latidos por minuto.`r y[3]-y[1]` 
+
+
+### Intervalo de confianza de pronóstico.
+
+* Calcular e interpretar un intervalo de 99% de confianza para frecuencia cardiaca en reposo de una persona que pesa 85 kilogramos y que NO pertenece a la muestra de 99 pacientes.
+
+
+```{r}
+
+predict(model, list(Peso = 63), level = 0.99, interval = "prediction")
+```
+
+Nota: Es un intervalo de confianza para alguien que NO esta dentro de la muestra y se quiere estimar su peso utilizando el modelo.Es para un individuo específico. 
+
+Con una confianza del 99% se estima que las personas conun pso de 63 kilogramos tienen en promedio una frecuencia cardiaca en reposo entre `r y[2]` y `r y[3]` latidos por minuto. la estimacion se hace con un margen de error de `r y[3]-y[1]`
+
+

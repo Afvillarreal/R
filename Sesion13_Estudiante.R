@@ -138,7 +138,7 @@ frec5 = table(data$sector)
 
 window()
 pies(fre5,
-     labels =c("Manufactura","Construcción","Otros")
+     labels =c("Manufactura","Construcción","Otros"),
      edges = 200,
      radius = 0.8,
      angle = 45,

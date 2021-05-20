@@ -1,15 +1,16 @@
 ---
 title: "Taller gráficos"
 author: "Andres Felipe Villarreal Reina"
-date: "10/5/2021"
+date: "15/5/2021"
 output: html_document
 ---
 
 
-```{r}
+```{r include=FALSE}
 #Elegir entorno de trabajo.
 setwd("C:/Users/felipe/Desktop/Curso R/R")
-
+library(AER)
+library(ggplot2)
 ```
 
 El propósito del presente taller es aplicar lo aprendido en relación a la construcción de gráficos en R. Al finalizar el taller debe enviar por CANVAS lo siguiente: 
@@ -33,23 +34,18 @@ estudiantes = read_delim("C:/Users/felipe/Desktop/Curso R/R/estudiantes.txt",
 
 ```
 
-2. (4 puntos) Compruebe si la base de datos tiene filas con datos perdidos. Si los hay, construya una base que se llame "estudiantes1" eliminando las filas con datos perdidos. ¿Cuántas filas se eliminaron?
+2. (4 puntos) Compruebe si la base de datos tiene filas con datos perdidos. Si los hay, construya auna base que se llame "estudiantes1" eliminando las filas con datos perdidos. ¿Cuántas filas se eliminaron?
 
 * Se eliminaron 119862 filas. 
 
 ```{r include=FALSE}
-# Cantidad de valores perdidos en la base de datos.
-sum(is.na(estudiantes))
+
+sum(is.na(estudiantes))#119862
 
 estudiantes1 = estudiantes
-sum(is.na(estudiantes1))
-
-# Eliminar los valores perdidos.
 
 estudiantes1 = na.omit(estudiantes1)
 
-# Para verificar que ya no tenemos datos perdidos.
-sum(is.na(estudiantes1))
 ```
 
 
@@ -57,8 +53,8 @@ sum(is.na(estudiantes1))
 
 ```{r include=FALSE}
 library(dplyr)
-estudiante2 = estudiantes1
-estudiante2 = estudiante2 %>% select("Año y periodo", "Programa de estudio", "Sexo", "Ciudad de colegio", "Biología", "Química", "Física", "Matemáticas", "Filosofía", "Historia", "Lenguaje", "Sociales", "Idioma","Interdiciplinar")
+estudiantes2 = estudiantes1
+estudiantes2 = estudiantes2 %>% select("Año y periodo", "Programa de estudio", "Sexo", "Ciudad de colegio", "Biología", "Química", "Física", "Matemáticas", "Filosofía", "Historia", "Lenguaje", "Sociales", "Idioma","Interdiciplinar")
 ```
 
 
@@ -68,7 +64,7 @@ Para hacer que los gráficos tengan una buena presentación es conveniente hacer
 4. (4 puntos) Renombrar las variables "Año.y.periodo", "Programa.de.estudio", "Sexo" y "Ciudad.de.colegio" como "Periodo", "Programa", "Genero" y "Ciudad", respectivamente. Guarde los cambios en estudiantes2.
 
 ```{r include=FALSE}
-estudiante2 = estudiante2 %>% rename(Periodo = "Año y periodo", Programa = "Programa de estudio", Genero = Sexo, Ciudad = "Ciudad de colegio")
+estudiantes2 = estudiantes2 %>% rename(Periodo = "Año y periodo", Programa = "Programa de estudio", Genero = Sexo, Ciudad = "Ciudad de colegio")
 ```
 
 
@@ -77,18 +73,13 @@ estudiante2 = estudiante2 %>% rename(Periodo = "Año y periodo", Programa = "Pro
 * No hay ciudades repetidas
 
 ```{r include=FALSE}
-estudiante2$Ciudad = as.factor(estudiante2$Ciudad)
-levels(estudiante2$Ciudad)
+estudiantes2$Ciudad = as.factor(estudiantes2$Ciudad)
+levels(estudiantes2$Ciudad)
 ```
 
 
 NOTA: Esto es importante porque si se van a hacer gráficas por ciudad, R las tomaría como ciudades diferentes. Es algo que debería verificarse con todas las variables que sean tipo factor.
 
-
-```{r echo=FALSE}
-library(knitr)
-knitr::kable(head(estudiante2),caption = "Tabla final para graficar")
-```
 
 # Gráficos.
 
@@ -96,34 +87,168 @@ En los puntos que siguen se propone hacer gráficos para visualizar la informaci
 
 6. (12 puntos) Utilizando la libreria base y ggplo2 construya un histograma para la variable "interdisciplinar". Describa que observa en el comportamiento de ésta variable y comente acerca de la libreria que más le gusto para hacer el gráfico.
 
+ * Con la variable Interdiciplinar por medio del histograma observo un tendencia de una gran cantidad de estudiantes de tener una interdisciplina de muy baja calificación, 
+   por otro lado me ha convensido mas la facilidad y sencillez para utilizar ggplot, por lo tanto estoy mas decantado a usar esta libreria.  
+```{r echo=FALSE}
 
+
+Graficacion_plot = ggplot(estudiantes2, aes(x=Interdiciplinar))+geom_histogram( 
+                                                      bins =10,
+                                                      color = "chocolate4",
+                                                      fill = "coral1",
+                                                      linetype = 2)
+Graficacion_plot + ggtitle("Distribución Interdiciplinar")+
+theme_bw()
+
+
+```
 
 
 
 7. (12 puntos) Utilizando la libreria que prefiera construya un gráfico donde se muestre la función de densidad de la variable "Matemáticas" por "Género". Haga una interpretación del gráfico.
 
+ * en esta ocación cuya  area bajo la curva sirve para determinar el cambio entre dos variables, observamos que ambos tiene comportamiento similares en cuanto a la centralidad de
+ sus resultados, pero se presentan por muy poco mejores notas en el sexo masculino comparado al sexo femenino. 
+
+```{r echo=FALSE}
+
+
+Densidadss = ggplot(estudiantes2, aes(Matemáticas)) + geom_density()
+
+Densidadss + scale_y_continuous("Genero")+
+  
+  scale_x_continuous(" Matemáticas ")+
+  
+  facet_grid(Genero~.)
+
+```
 
 
 
 8. (12 puntos) Utilizando la libreria que prefiera construya un diagrama circular donde muestre el porcentaje de estudiantes que presentaron la prueba por programa. Haga una interpretación del gráfico.
 
+```{r echo=FALSE}
+  
+torta = table(estudiantes2$Programa)
+
+
+pie(torta,
+    labels = c("Programa A","Programa B","Otros"),
+    edg=200,
+    radius = 0.9,
+    angle = 45,
+    col = c("darkseagreen3","goldenrod2","black"),
+    border = 50,
+    lty=1,
+    main = "Cantidad de estudiantes que presentaron la Prueba por programa")
+  
+```
+
+
+ * Logramos observar como el programa A ocupa casi 3/4 partes del diagrama, demostrando un dominio mayor al programa B.   
 
 
 9. (12 puntos)Construya un gráfico que le permita comparar ver como se comporta la variable "Matemáticas" por "Programa". Interprete lo que observa. 
 
+  * En el grafico observamos como se compara la variable matematica por el programa, y de esta manera se comprueba como el programa A tiene un mejor desempeño en esta unidad.
+  
+```{r echo=FALSE, warning=FALSE}
+  
 
+Comp = ggplot(estudiantes2,aes(Matemáticas, fill=Programa),color="black")+ geom_bar(aes(fill = Programa))
+Comp + xlab(NULL) + ylab("Numero de casos") +
+  ggtitle("Comparación de Matematicas - programa")+
+  scale_fill_discrete("Programa",labels=c("Programa A","Programa B"))+
+  theme_light()
+
+```
 
 
 10. (12 puntos) Construya un boxplot a partir del cual pueda comparar la variable "Matemáticas" con las demás materias. Incluya la media de cada materia en el gráfico. Describa lo que observa en la gráfica.
 
 
+ *   Podemos observar que la materia de matematicas tiene un resultado acorde al promedio, donde muy pocas logran destacar como lo es Idiomas.
+```{r echo=FALSE}
 
+base_materias = estudiantes2 %>% select(c("Matemáticas","Biología","Química","Física","Filosofía","Historia","Lenguaje","Sociales","Idioma"))
+
+boxplot(base_materias,
+        main="Comparación materias",
+        xlab="materias")
+
+
+```
+ 
+ 
 
 11. (12 puntos) Construya un diagrama de barras apiladas para ver el tipo de programa por ciudad. Interprete el gráfico
 
+```{r echo=FALSE, warning=FALSE}
 
+ver = ggplot(estudiantes2,aes(Matemáticas, fill=Ciudad, width= 100),width= 100)+ geom_bar(position = "stack")
 
+  ver + xlab(NULL) + ylab("Numero de casos") +
+  ggtitle("Distribución de programa por ciudad - Barras aplicadas")+
+  coord_cartesian(xlim = c(40, 95), ylim = c(0, 20))+
+  
+  theme_light()
+  
+  
+```
+
+ * Podemos observar como el programa 2 tiene una mayor participación en las diferentes ciudades, ademas que bogota tiene el mauyor porcentaje en la aplicacion. 
+ 
 12. (12 puntos) Construya un un gráfico que le permita comparar el comportamineto de la variable "Matemáticas" para los colegios ubicados en los municipios de CHIA y FACATATIVA.
+
+```{r echo=FALSE}
+  
+#nueva = estudiantes2 %>% select(Ciudad)%>% 
+  #filter(Ciudad=="CHIA")
+
+#Muni <- ggplot(estudiantes2, aes(Ciudad , y = Matemáticas  )) +geom_bar()
+
+#Muni2 <- ggplot(estudiantes2, aes(estudiantes2 %>% select(Ciudad)%>% 
+#  filter(Ciudad=="CHIA" & Ciudad=="FACATATIVA." )))
+
+#estudiantes2 %>% select(Ciudad)%>% 
+#  filter(Ciudad=="CHIA" & Ciudad=="FACATATIVA." )
+
+#Muni2 + xlab("Programa") + ylab("R. Matematica") +
+#  ggtitle("Distribución de matematicas por entrevista")+
+#  scale_fill_discrete("Programa")+
+    
+#  theme_light()
+
+#Mar_var+geom_vline(aes(xintercept=mean(estudiantes2$Física)))+
+
+#boxplot(Mar_var,
+  #      scale_x_binned("%b %d"),
+ #       main="Distribución media de las materias",
+   #     ylab="Resultados",
+    #    xlab="Materias")
+
+
+     #Muni = ggplot(estudiantes2, aes(Matemáticas,nueva)) + geom_density()
+
+#Muni + scale_y_continuous("Densidad")+
+ # scale_y_continuous("Educacion")+
+#  facet_grid(Ciudad=="CHIA"~Ciudad=="FACATATIVA.")
+
+#as.character(nueva)
+#estudiantes2$Ciudad"
+
+#ESTE PUNTO NO LO LOGRE HACER DEL TODO PROFE :c
+
+fre= table(estudiantes2$Matemáticas, estudiantes2$Ciudad==c("CHIA","FACATATIVA"))
+
+barplot(fre,
+        col = rainbow(2),
+        beside=T,
+        xlab="Ciudades",
+        ylab = "Desempeño",
+        ylim=c(0,50))
+
+```
 
 
 

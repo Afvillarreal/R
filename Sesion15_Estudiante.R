@@ -53,6 +53,7 @@ library(ggplot2)
 #utilizando la libreria ggplot2
 
 windows()
+
 ggplot(Data, aes(x = experience))+ geom_histogram()
 
 g1 = ggplot(Data, aes(x = experience))+ geom_histogram(aes(y=..density..),
@@ -62,6 +63,19 @@ g1 = ggplot(Data, aes(x = experience))+ geom_histogram(aes(y=..density..),
                                                      linetype = 2)
 
 g1 + ggtile("Distribucion de los años de experiencia")+
+  xlab("Años de experiencia")+
+  ylab("Densidad")+
+  theme_bw()
+
+Data$experience
+
+ggplot(Data, aes(x=experience))+ geom_histogram()
+g1 <- ggplot(Data, aes(x=experience))+ geom_histogram(aes(y=..density..),
+                                                      bins =10,
+                                                      color = "white",
+                                                      fill = "cyan4",
+                                                      linetype = 2)
+g1 + ggtitle("Distribución de los años de experiencia")+
   xlab("Años de experiencia")+
   ylab("Densidad")+
   theme_bw()
@@ -83,19 +97,24 @@ facet_grid(gender)
 #y adicionalmente muestre el valor medio y la mediana de la variable, 
 #asi como su funcion de densidad.
 
-windows()
-g2 = ggplot(Data, aes(x = experience))+ geom_histogram(aes(y=..density.., fill = ..count..),
-                                                       bins = 20,
-                                                       color = "white")
 
-g2 + geom_vline(aes(xintercept=mean(experience)), color="red")+
-     geom_vline(aes(xintercept=median(experience)), color="blue")
-     labs(title ="Distribucion de la experiencia",
-          x= "Experiencia",
-          y = "N. empleados")+ 
-       scale_fill_continuous(name="N. empleados")+
-       geom_density(color="green")+
-       theme_light()
+windows()     
+g2<- ggplot(Data, aes(x=experience))+geom_histogram(aes(y=..density..,fill=..count..),
+                                                    bins=20,
+                                                    color="white",
+                                                    )
+
+g2+ geom_vline(aes(xintercept=mean(experience)), color="red")+
+  geom_vline(aes(xintercept=mean(experience)), color="blue")+
+  labs(title ="Distribucion de la experiencia",
+       x="Experiencia",
+       y="N.empleados")+
+  scale_fill_continuous(name="N.empleados")+
+  geom_density(color="green")+
+  theme_light()
+     
+     
+
 
 #aes(fill=..count..) con esta opciÃ³n le estoy diciendo el color de las barras 
 # se asigne de acuerdo a la cantidad de empleados
@@ -112,7 +131,7 @@ g2 + geom_vline(aes(xintercept=mean(experience)), color="red")+
      
      g3 = ggplot(Data, aes(education)) + geom_line(stat="density")
      
-     g3 + scale_y_continuous("Densidad")+
+     g3 + scale_y_continuos("Densidad")+
        scale_x_continuous("Educación")+
        facet_grid(ethnicity~.)
 
@@ -124,7 +143,7 @@ g2 + geom_vline(aes(xintercept=mean(experience)), color="red")+
 
 windows()
 g3 + scale_y_continuous("Densidad")+
-  scale_y_continuous("Educacion")+
+  scale_x_continuous("Educacion")+
   facet_grid(ethnicity~.)
 
 #Ejercicio: Construya la funciÃ³n de densidad para la variable 
@@ -133,7 +152,7 @@ g3 + scale_y_continuous("Densidad")+
 windows()
 g3 + scale_y_continuous("Densidad")+
   scale_y_continuous("Educacion")+
-  facet_grid(ethnicity~.)
+  facet_grid(ethnicity~gender)
 
 
 #=================================
@@ -156,7 +175,24 @@ g4 = ggplot(Data, aes(experience))+ geom_freqpoly(bins=20, aes(color=gender))
 
 #Diagrama de caja para la variable "age"
 
+windows()
+g5 = ggplot(Data, aes(x=gender, y = experience, fill = gender))+ geom_boxplot()
 
+g5 + labs(x= "Genero",y="Experience", fill="Genero")+
+scale_x_discrete(labels=c("Hombres","Mujeres"))+
+  scale_fill_discrete(labels=c("Hombres","Mujeres"))+
+  geom_point(stat = "summary", fun.y = mean, shape =16, size=2, color="red")
+  geom_jitter(width=0.1, alpha=0.2)
+  
+  
+windows()
+g5 <- ggplot(Data, aes(x=gender, y=experience, fill= gender)) + geom_boxplot()
+
+g5 + labs(x="Genéro", y="Experiencia", fill ="Genéro")+
+scale_x_discrete(labels=c("Hombres","Mujeres"))+
+    scale_fill_discrete(labels=c("Hombres","Mujeres"))+
+    geom_point(stat="summary", fun.y = mean, shape=16, size=2, color="red")+
+    geom_jitter(width=0.1, alpha=0.2)
 
 #Ejercicio: Construya un diagrama de caja para la variable "age" por "gender"
 
@@ -175,12 +211,14 @@ g4 = ggplot(Data, aes(experience))+ geom_freqpoly(bins=20, aes(color=gender))
 #Ejercicio: Construya un diagrama de puntos 
 #que relacione la "experience" y el "wage", ademÃ¡s distinga por "gender"
 
-
+windows()
+g6 = ggplot(Data, aes(x= experience, y= wage, color = gender, shape = gender))+
+    geom_point(size=2)
 
 #Ejercicio: Construya un diagrama de puntos 
 #que relacione la "experience" y el "age", agregar un Smoother 
 #para observar el patrÃ³n dominante.
 
-
+g7 = ggplot(Data, aes(x=experience, y= age))+ geom_point() + geom_smooth()
 
 
